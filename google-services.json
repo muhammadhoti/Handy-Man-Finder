@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "856759030191",
+    "firebase_url": "https://handyman-finder-e2da8.firebaseio.com",
+    "project_id": "handyman-finder-e2da8",
+    "storage_bucket": "handyman-finder-e2da8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:856759030191:android:4fc9b76fed39b562",
+        "android_client_info": {
+          "package_name": "HandymanFinder.com"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "856759030191-a97hg7pc9grdk7bgu6pqak7blbmf5ndl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDnL-Es-WYYF754C85ybDObF56VBkx8OL0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
