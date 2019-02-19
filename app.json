@@ -24,6 +24,14 @@
     ],
     "ios": {
       "supportsTablet": true
+    },
+    "android": {
+      "package": "com.hayfatech.muhammadhoti",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyDkCbHsDY3iosq47mcc3_EQHmLZyi80kOE"
+        }
+      }
     }
   }
 }
