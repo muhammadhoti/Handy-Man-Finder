@@ -1,11 +1,26 @@
 import React from 'react';
-import { View , Button, Text, StyleSheet, Image, Platform, Dimensions} from 'react-native';
-import { Container, Header, Content, Form, Item, Input, Picker, Icon, TouchableOpacity  } from 'native-base';
-import { ImagePicker,  Permissions,Constants,Location } from 'expo';
+import {View,
+        Button,
+        Text,
+        StyleSheet,
+        Image,
+        Platform
+       } from 'react-native';
+import {Button as MyButton,
+        Container,
+        Header,
+        Content,
+        Form,
+        Item,
+        Input,
+        Picker,
+        Icon
+       } from 'native-base';
+import {ImagePicker,  
+        Permissions,Constants,Location 
+       } from 'expo';
 import MapView from 'react-native-maps';
-import { Marker } from 'react-native-maps';
 import firebase from '../config/firebase.js';
-const { height, width } = Dimensions.get( 'window' );
 
 export default class Info extends React.Component {
   constructor(props){
@@ -19,7 +34,7 @@ export default class Info extends React.Component {
       coordinates : {
         latitude : 24.8822,
         longitude: 67.0674,
-        
+        mapConfirmation : false,
       }
       
     }
@@ -27,25 +42,23 @@ export default class Info extends React.Component {
     this.showMap = this.showMap.bind(this)
     this._getLocationAsync = this._getLocationAsync.bind(this)
     this.updateCenter = this.updateCenter.bind(this)
-    this.check = this.check.bind(this)
+    this.setLocation = this.setLocation.bind(this)
+    this.sendData = this.sendData.bind(this)
   }
 
   componentDidMount(){
       this.setState({
-          userData : this.props.navigation.state.params,
+        userData : this.props.navigation.state.params,
       })
       if (Platform.OS === 'android' && !Constants.isDevice) {
         this.setState({
-          errorMessage: 'Oops, this will not work on Sketch in an Android emulator. Try it on your device!',
+        errorMessage: 'Oops, this will not work on Sketch in an Android emulator. Try it on your device!',
         });
-      } else {
+      }else {
         this._getLocationAsync();
         Location.requestPermissionsAsync()
         const deviceLocation = Location.hasServicesEnabledAsync();
-        // !deviceLocation && 
-
       }
-      
   }
 
   _getLocationAsync = async () => {
@@ -55,7 +68,6 @@ export default class Info extends React.Component {
         errorMessage: 'Permission to access location was denied',
       });
     }
-
     let location = await Location.getCurrentPositionAsync({});
     this.setState({ location });
   };
@@ -72,7 +84,6 @@ export default class Info extends React.Component {
       allowsEditing: true,
       aspect: [3, 3],
     });
-
     if (!result.cancelled) {
       this.setState({ image: result.uri });
       const uri = result.uri;
@@ -86,16 +97,15 @@ export default class Info extends React.Component {
    async uploadImageAsync(uri) {
     const blob = await new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
-      xhr.onload = function() {
+        xhr.onload = function() {
         resolve(xhr.response);
       };
-      xhr.onerror = function(e) {
-        console.log(e);
+        xhr.onerror = function(e) {
         reject(new TypeError('Network request failed'));
       };
-      xhr.responseType = 'blob';
-      xhr.open('GET', uri, true);
-      xhr.send(null);
+        xhr.responseType = 'blob';
+        xhr.open('GET', uri, true);
+        xhr.send(null);
     });
 
     const ref = firebase
@@ -105,7 +115,6 @@ export default class Info extends React.Component {
     const snapshot = await  ref.put(blob);
   
     blob.close();
-    console.log(snapshot.ref.getDownloadURL())
     return await snapshot.ref.getDownloadURL();
   }
 
@@ -120,8 +129,39 @@ export default class Info extends React.Component {
     this.setState(coordinates)
   }
   
-  check(){
-    console.log("Checking ")
+  setLocation(){
+    const {userData, coordinates} = this.state;
+    userData.coordinates = coordinates;
+    this.setState(userData);
+    this.setState({
+      mapComponent : false
+    })
+    this.setState({
+      mapConfirmation : true
+    })
+  }
+
+  sendData(){
+    const {userData,mapConfirmation} = this.state;
+    const database = firebase.database();
+    const number = userData.number;
+    const profession = userData.profession;
+    const displayPicture = userData.displayPicture;
+    const newUserRef = database.ref(`userInfo`).push();
+    const userListRef = database.ref(`usersList`).push();
+    const uid = userData.uid
+    if(mapConfirmation && number && profession && displayPicture){
+      newUserRef.set(userData)
+      userListRef.set({uid})
+      .then(
+        ()=>{
+          this.props.navigation.navigate("Home",uid)
+        }
+      )
+    }else {
+      alert("Please Enter All Information Correctly")
+    }
+    
   }
 
   render() {
@@ -132,101 +172,107 @@ export default class Info extends React.Component {
     let { image, mapComponent } = this.state;
     return (
       <View style={{flex: 1}}>
-          {!mapComponent &&
-            <Container>
+        {!mapComponent &&
+          <Container>
             <Header />
-            <Content>
-              <Text style={styles.titleText}>Enter Your Information</Text>
-              <Form>
-              <Item floatingLabel>
-                  <Input 
-                  placeholder = "Enter Your Phone Number"
-                  onChange={
-                    (e)=>{
-                      const {userData} = this.state
-                      userData.number = e.nativeEvent.text
-                      this.setState(userData)
-                  }
-                  }
-                  />
-                </Item>
-                <Item picker>
-                <Text style={styles.titleText2}>Select Any One</Text>
-                  <Picker
-                    mode="dropdown"
-                    iosIcon={<Icon name="arrow-down" />}
-                    style={{ width: undefined }}
-                    placeholder="Select your Profession"
-                    placeholderStyle={{ color: "#bfc6ea" }}
-                    placeholderIconColor="#007aff"
-                    selectedValue={this.state.selected2}
-                    onValueChange={this.onValueChange2.bind(this)}
-                  >
-                    <Picker.Item label="Electrician" value="Electrician" />
-                    <Picker.Item label="Plumber" value="Plumber" />
-                    <Picker.Item label="Carpenter" value="Carpenter" />
-                    <Picker.Item label="Colorist" value="Colorist" />
-                    <Picker.Item label="Welder" value="Welder" />
-                    <Picker.Item label="Looking For Handy Man" value="Looking For Handy Man" />
-                  </Picker>
-                </Item>
-                <Item>
+              <Content>
+                <Text style={styles.titleText}>Enter Your Information</Text>
+                <Form>
+                  <Item floatingLabel>
+                    <Input 
+                      placeholder = "Enter Your Phone Number"
+                      onChange={
+                      (e)=>{
+                        const {userData} = this.state
+                        userData.number = e.nativeEvent.text
+                        this.setState(userData)
+                        }
+                      }
+                      />
+                  </Item>
+                  <Item picker>
+                    <Text style={styles.titleText2}>Select Any One</Text>
+                    <Picker
+                      mode="dropdown"
+                      iosIcon={<Icon name="arrow-down" />}
+                      style={{ width: undefined }}
+                      placeholder="Select your Profession"
+                      placeholderStyle={{ color: "#bfc6ea" }}
+                      placeholderIconColor="#007aff"
+                      selectedValue={this.state.selected2}
+                      onValueChange={this.onValueChange2.bind(this)}
+                    >
+                      <Picker.Item label="Electrician" value="Electrician" />
+                      <Picker.Item label="Plumber" value="Plumber" />
+                      <Picker.Item label="Carpenter" value="Carpenter" />
+                      <Picker.Item label="Colorist" value="Colorist" />
+                      <Picker.Item label="Welder" value="Welder" />
+                      <Picker.Item label="Looking For Handy Man" value="Looking For Handy Man" />
+                    </Picker>
+                  </Item>
+                </Form>
+                <Content>
                   <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                  {image &&
-                      <Image  source={{ uri: image }} style={{ width: 50, height: 50 }} />
-                  }
-                  {!image &&
-                    <Button
-                      title="Upload Your Picture"
-                      onPress={this._pickImage}
-                    />
-                  }
-                </View>
-                </Item>
-                <Item>
-                  <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                  {!mapComponent &&
-                    <Button
-                      title="Set Your Location"
-                      onPress={this.showMap}
-                    />
-                  }
-                </View>
-                </Item>
-              </Form>
-            </Content>
-          </Container>
-          }
-          {mapComponent &&
-                  <View style={{
-                    flex: 1
-                   }}>
-                    <MapView 
-                    style={{
-                         flex: 1
-                        }}
-                      initialRegion={{
-                      latitude: coordinates.latitude,
-                      longitude: coordinates.longitude,
-                      latitudeDelta: 0.0072,
-                      longitudeDelta: 0.0051
-                    }}>
-                      <MapView.Marker
-                      draggable
-                      coordinate={{
-                        latitude: coordinates.latitude,
-                        longitude: coordinates.longitude,
-                      }}
-                      onDragEnd={(e) => this.updateCenter(e.nativeEvent.coordinate)}
-                      >
-                      </MapView.Marker>
-                    </MapView>
-                    <Button style={{
-                         flex: 1
-                        }}title='Set' onPress={this.check} />
+                    {!mapComponent &&
+                      <Button
+                        title="Set Your Location"
+                        onPress={this.showMap}
+                      />
+                    }
                   </View>
-                  }        
-        </View>
+                </Content>
+                <Content>
+                  <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                    {image &&
+                      <Image  source={{ uri: image }} style={{ width: 50, height: 50 }} />
+                    }
+                    {!image &&
+                      <Button
+                        title="Upload Your Picture"
+                        onPress={this._pickImage}
+                      />
+                    }
+                  </View>
+                </Content>
+                <MyButton block warning
+                  onPress={this.sendData}
+                >
+                  <Text>SUBMIT</Text>
+                </MyButton>
+                </Content>
+          </Container>
+        }
+        {mapComponent &&
+          <View style={{
+            flex: 1
+            }}>
+            <MapView 
+              style={{
+              flex: 1
+              }}
+              initialRegion={{
+                latitude: coordinates.latitude,
+                longitude: coordinates.longitude,
+                latitudeDelta: 0.0072,
+                longitudeDelta: 0.0051
+              }}>
+              <MapView.Marker
+                draggable
+                coordinate={{
+                latitude: coordinates.latitude,
+                longitude: coordinates.longitude,
+                }}
+                onDragEnd={(e) => this.updateCenter(e.nativeEvent.coordinate)}
+              >
+              </MapView.Marker>
+            </MapView>
+            <Button style={{
+              flex: 1
+              }}title='Set' onPress={this.setLocation} 
+            />
+          </View>
+        }
+      </View>
     );
   }
 }

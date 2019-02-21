@@ -2,8 +2,6 @@ import React from 'react';
 import { StyleSheet, Text, View, Button } from 'react-native';
 import firebase from '../config/firebase.js';
 import {AsyncStorage} from 'react-native';
-// import { Button } from 'react-native-elements';
-// import Icon from 'react-native-vector-icons/FontAwesome';
 
 export default class Login extends React.Component {
   constructor(props){
@@ -35,7 +33,7 @@ export default class Login extends React.Component {
           await this.setState({
             userData : userData
           })
-          
+
           await this.props.navigation.navigate("Info",userData)
           
           return Promise.resolve({type: 'success'});
