@@ -1,8 +1,11 @@
 import React from 'react';
-import { View , Button, Text, StyleSheet, Image, Platform} from 'react-native';
+import { View , Button, Text, StyleSheet, Image, Platform, Dimensions} from 'react-native';
 import { Container, Header, Content, Form, Item, Input, Picker, Icon, TouchableOpacity  } from 'native-base';
-import { ImagePicker, MapView } from 'expo';
+import { ImagePicker,  Permissions,Constants,Location } from 'expo';
+import MapView from 'react-native-maps';
+import { Marker } from 'react-native-maps';
 import firebase from '../config/firebase.js';
+const { height, width } = Dimensions.get( 'window' );
 
 export default class Info extends React.Component {
   constructor(props){
@@ -11,16 +14,51 @@ export default class Info extends React.Component {
       image: null,
       selected2: undefined,
       mapComponent : false,
+      location: null,
+      errorMessage: null,
+      coordinates : {
+        latitude : 24.8822,
+        longitude: 67.0674,
+        
+      }
+      
     }
     this.uploadImageAsync = this.uploadImageAsync.bind(this)
     this.showMap = this.showMap.bind(this)
+    this._getLocationAsync = this._getLocationAsync.bind(this)
+    this.updateCenter = this.updateCenter.bind(this)
+    this.check = this.check.bind(this)
   }
 
   componentDidMount(){
       this.setState({
           userData : this.props.navigation.state.params,
       })
+      if (Platform.OS === 'android' && !Constants.isDevice) {
+        this.setState({
+          errorMessage: 'Oops, this will not work on Sketch in an Android emulator. Try it on your device!',
+        });
+      } else {
+        this._getLocationAsync();
+        Location.requestPermissionsAsync()
+        const deviceLocation = Location.hasServicesEnabledAsync();
+        // !deviceLocation && 
+
+      }
+      
   }
+
+  _getLocationAsync = async () => {
+    let { status } = await Permissions.askAsync(Permissions.LOCATION);
+    if (status !== 'granted') {
+      this.setState({
+        errorMessage: 'Permission to access location was denied',
+      });
+    }
+
+    let location = await Location.getCurrentPositionAsync({});
+    this.setState({ location });
+  };
 
   onValueChange2(value) {
     const {userData} = this.state
@@ -75,8 +113,22 @@ export default class Info extends React.Component {
     this.setState({mapComponent : true})
   }
 
+  updateCenter(coordinate){
+    const {coordinates} = this.state
+    coordinates.latitude = coordinate.latitude
+    coordinates.longitude = coordinate.longitude
+    this.setState(coordinates)
+  }
+  
+  check(){
+    console.log("Checking ")
+  }
+
   render() {
-    console.log(this.state.userData)
+    console.log(this.state)
+
+    const {coordinates} = this.state;
+
     let { image, mapComponent } = this.state;
     return (
       <View style={{flex: 1}}>
@@ -146,17 +198,33 @@ export default class Info extends React.Component {
           </Container>
           }
           {mapComponent &&
-                    <MapView
+                  <View style={{
+                    flex: 1
+                   }}>
+                    <MapView 
                     style={{
-                      flex: 1
-                    }}
-                    initialRegion={{
-                      latitude: 24.8607,
-                      longitude: 67.0011,
-                      latitudeDelta: 0.0922,
-                      longitudeDelta: 0.0421
-                    }}
-                  />
+                         flex: 1
+                        }}
+                      initialRegion={{
+                      latitude: coordinates.latitude,
+                      longitude: coordinates.longitude,
+                      latitudeDelta: 0.0072,
+                      longitudeDelta: 0.0051
+                    }}>
+                      <MapView.Marker
+                      draggable
+                      coordinate={{
+                        latitude: coordinates.latitude,
+                        longitude: coordinates.longitude,
+                      }}
+                      onDragEnd={(e) => this.updateCenter(e.nativeEvent.coordinate)}
+                      >
+                      </MapView.Marker>
+                    </MapView>
+                    <Button style={{
+                         flex: 1
+                        }}title='Set' onPress={this.check} />
+                  </View>
                   }        
         </View>
     );
