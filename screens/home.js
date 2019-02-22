@@ -7,7 +7,8 @@ export default class Home extends React.Component {
   constructor(props){
     super(props)
     this.state={
-
+      
+      
     }
   }
 
@@ -15,13 +16,22 @@ export default class Home extends React.Component {
     this.setState({
       uid : this.props.navigation.state
     })
+    fetch(`https://i-friend-you.firebaseio.com/usersList.json`)
+    .then(data => {
+        return data.json();
+    })
+    .then(data2 => {
+        for(let i in data2){
+          this.state.usersList.push(data2[i].uid);
+        }
+    })
 }
 
   render() {
     console.log(this.state)
     return (
       <View style={styles.container}>
-      <Text>Home Screen</Text>
+      <Text>App Under Construction</Text>
       </View>
     );
   }
@@ -30,7 +40,7 @@ export default class Home extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000000',
+    backgroundColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
   },

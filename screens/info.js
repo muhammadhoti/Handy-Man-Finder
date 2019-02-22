@@ -34,9 +34,8 @@ export default class Info extends React.Component {
       coordinates : {
         latitude : 24.8822,
         longitude: 67.0674,
-        mapConfirmation : false,
-      }
-      
+      },
+      mapConfirmation : false,
     }
     this.uploadImageAsync = this.uploadImageAsync.bind(this)
     this.showMap = this.showMap.bind(this)

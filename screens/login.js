@@ -7,13 +7,27 @@ export default class Login extends React.Component {
   constructor(props){
     super(props)
     this.state={
-
+      usersList : [],
     }
   }
-
+  
+    componentDidMount(){
+      fetch(`https://handyman-finder-e2da8.firebaseio.com/usersList.json`)
+    .then(data => {
+        return data.json();
+    })
+    .then(data2 => {
+        // console.log(data2);
+        for(let i in data2){
+          this.state.usersList.push(data2[i].uid);
+        }
+    })
+    }
+  
     async login() {
       const appId = '2219108611676444';
       const permissions = ['public_profile', 'email'];  // Permissions required, consult Facebook docs
+      const usersList = this.state;
       
       const {
         type,
@@ -33,9 +47,11 @@ export default class Login extends React.Component {
           await this.setState({
             userData : userData
           })
-
-          await this.props.navigation.navigate("Info",userData)
-          
+          const userCheck = await usersList.usersList.includes(userData.uid)
+          await (userCheck ? this.props.navigation.navigate("Home",userData.uid) :
+          this.props.navigation.navigate("Info",userData)
+          )
+                
           return Promise.resolve({type: 'success'});
         }
         case 'cancel': {
