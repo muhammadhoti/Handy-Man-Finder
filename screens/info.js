@@ -166,7 +166,7 @@ export default class Info extends React.Component {
   render() {
     console.log(this.state)
 
-    const {coordinates} = this.state;
+    const {coordinates,userData} = this.state;
 
     let { image, mapComponent } = this.state;
     return (
@@ -178,6 +178,7 @@ export default class Info extends React.Component {
                 <Text style={styles.titleText}>Enter Your Information</Text>
                 <Form>
                   <Item floatingLabel>
+                    {userData &&
                     <Input 
                       placeholder = "Enter Your Phone Number"
                       onChange={
@@ -187,7 +188,9 @@ export default class Info extends React.Component {
                         this.setState(userData)
                         }
                       }
+                      value = {userData.number}
                       />
+                    }
                   </Item>
                   <Item picker>
                     <Text style={styles.titleText2}>Select Any One</Text>

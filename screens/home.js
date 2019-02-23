@@ -8,34 +8,63 @@ export default class Home extends React.Component {
   constructor(props){
     super(props)
     this.state={
-      
-      
+    
     }
   }
 
   componentDidMount(){
-    this.setState({
-      uid : this.props.navigation.state
+    //Getting Uid From Props
+    {
+      this.setState({
+      uid : this.props.navigation.state.params
     })
-    fetch(`${dbRef}/usersList.json`)
-    .then(data => {
+  }
+    //Fetching User List From Database
+    {
+      fetch(`${dbRef}/usersList.json`)
+      .then(data => {
         return data.json();
-    })
-    .then(data2 => {
+      })
+      .then(data2 => {
+        const users = [];
       // console.log(data2)
         for(let i in data2){
-          this.state.usersList.push(data2[i].uid);
+          users.push(data2[i].uid);
         }
-        this.setState(this.state.usersList)
-    })
+        this.setState({
+          usersList : users
+        })
+      })
+    }
+    {
+      //Fetching User Info From Database
+      fetch(`${dbRef}/userInfo.json`)
+      .then(data => {
+        return data.json();
+      })
+      .then(data2 => {
+        let users = [];
+        let user = {};
+        const { uid } = this.state;
+        for(let i in data2){
+          data2[i].uid === uid ?
+          user = data2[i]
+          :
+          users.push(data2[i])
+        }
+        this.setState({
+          otherUsers : users,
+          currentUser : user
+        })
+      })
+    }
 }
 
-  render() {
-    console.log(this.state)
-    console.log(dbRef)
+render() {
     return (
       <View style={styles.container}>
       <Text>App Under Construction</Text>
+      <Button title = "check" onPress={()=>{this.setState({check:"check"})}}/>
       </View>
     );
   }
