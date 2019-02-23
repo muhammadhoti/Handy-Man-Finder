@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View, Button } from 'react-native';
 import firebase from '../config/firebase.js';
 import {AsyncStorage} from 'react-native';
+import { dbRef,fbAppId } from '../constants/constants'
 
 export default class Login extends React.Component {
   constructor(props){
@@ -12,7 +13,7 @@ export default class Login extends React.Component {
   }
   
     componentDidMount(){
-      fetch(`https://handyman-finder-e2da8.firebaseio.com/usersList.json`)
+      fetch(`${dbRef}/usersList.json`)
     .then(data => {
         return data.json();
     })
@@ -25,7 +26,7 @@ export default class Login extends React.Component {
     }
   
     async login() {
-      const appId = '2219108611676444';
+      const appId = fbAppId;
       const permissions = ['public_profile', 'email'];  // Permissions required, consult Facebook docs
       const usersList = this.state;
       
@@ -47,8 +48,9 @@ export default class Login extends React.Component {
           await this.setState({
             userData : userData
           })
-          const userCheck = await usersList.usersList.includes(userData.uid)
-          await (userCheck ? this.props.navigation.navigate("Home",userData.uid) :
+          const uid = await userData.uid
+          const userCheck = await usersList.usersList.includes(uid)
+          await (userCheck ? this.props.navigation.navigate("Home",uid) :
           this.props.navigation.navigate("Info",userData)
           )
                 
