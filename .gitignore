@@ -1,7 +1,7 @@
 node_modules/**/*
 app.json
 constants
-config/
+config/*
 .expo/*
 npm-debug.*
 *.jks
