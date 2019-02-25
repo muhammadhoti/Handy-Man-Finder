@@ -13,7 +13,7 @@ export default class Login extends React.Component {
   }
   
     componentDidMount(){
-      //commented till development
+      // commented till development
     //   fetch(`${dbRef}/usersList.json`)
     // .then(data => {
     //     return data.json();
@@ -24,7 +24,7 @@ export default class Login extends React.Component {
     //       this.state.usersList.push(data2[i].uid);
     //     }
     // })
-    //commented till development
+    // commented till development
     this.props.navigation.navigate("Home",{uid:uid})
     }
   
