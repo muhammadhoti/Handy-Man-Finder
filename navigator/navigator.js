@@ -1,9 +1,12 @@
 import React from 'react';
 import {  View } from 'react-native';
-import {  createStackNavigator, createAppContainer } from "react-navigation";
+import {  createStackNavigator, createAppContainer, createBottomTabNavigator } from "react-navigation";
 import Login from '../screens/login'
 import Info from '../screens/info'
-import Home from '../screens/home'
+import Profile from '../screens/profile'
+import Handymans from '../screens/handymans'
+import Messages from '../screens/messages'
+import Contracts from '../screens/contracts'
 
 class Navigator extends React.Component {
   render() {
@@ -15,6 +18,13 @@ class Navigator extends React.Component {
   }
 }
 
+const TabNavigator = createBottomTabNavigator ({
+  Profile: Profile,
+  Handymans : Handymans,
+  Messages : Messages,
+  Contracts : Contracts,
+});
+
 const AppNavigator = createStackNavigator({
   Login: {
     screen: Login
@@ -23,7 +33,7 @@ const AppNavigator = createStackNavigator({
     screen : Info
   },
   Home:{
-    screen : Home
+    screen : TabNavigator
   }
 });
 

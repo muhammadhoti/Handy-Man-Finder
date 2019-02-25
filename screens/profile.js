@@ -4,7 +4,7 @@ import firebase from '../config/firebase.js';
 import {AsyncStorage} from 'react-native';
 import { dbRef } from '../constants/constants'
 
-export default class Home extends React.Component {
+export default class Profile extends React.Component {
   constructor(props){
     super(props)
     this.state={
@@ -16,7 +16,7 @@ export default class Home extends React.Component {
     //Getting Uid From Props
     {
       this.setState({
-      uid : this.props.navigation.state.params
+      uid : this.props.navigation.state.params.uid
     })
   }
     //Fetching User List From Database
@@ -64,7 +64,7 @@ render() {
     return (
       <View style={styles.container}>
       <Text>App Under Construction</Text>
-      <Button title = "check" onPress={()=>{this.setState({check:"check"})}}/>
+      <Button title = "check" onPress={()=>{console.log(this.state)}}/>
       </View>
     );
   }

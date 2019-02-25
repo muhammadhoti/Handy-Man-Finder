@@ -17,7 +17,9 @@ import {Button as MyButton,
         Icon
        } from 'native-base';
 import {ImagePicker,  
-        Permissions,Constants,Location 
+        Permissions,
+        Constants,
+        Location 
        } from 'expo';
 import MapView from 'react-native-maps';
 import firebase from '../config/firebase.js';
@@ -46,8 +48,8 @@ export default class Info extends React.Component {
   }
 
   componentDidMount(){
-      this.setState({
-        userData : this.props.navigation.state.params,
+    this.setState({
+    userData : this.props.navigation.state.params,
       })
       if (Platform.OS === 'android' && !Constants.isDevice) {
         this.setState({
@@ -55,20 +57,21 @@ export default class Info extends React.Component {
         });
       }else {
         this._getLocationAsync();
-        Location.requestPermissionsAsync()
-        const deviceLocation = Location.hasServicesEnabledAsync();
-      }
+    }
   }
 
   _getLocationAsync = async () => {
+    const { coordinates } = this.state
     let { status } = await Permissions.askAsync(Permissions.LOCATION);
+    const locationSerivceCheck = await Location.hasServicesEnabledAsync();
     if (status !== 'granted') {
-      this.setState({
-        errorMessage: 'Permission to access location was denied',
-      });
+      return  'Permission to access location was denied'
+    }else if(locationSerivceCheck){
+      let location = await Location.getCurrentPositionAsync();
+      coordinates.longitude = location.coords.longitude
+      coordinates.latitude = location.coords.latitude
+      return this.setState(coordinates)
     }
-    let location = await Location.getCurrentPositionAsync({});
-    this.setState({ location });
   };
 
   onValueChange2(value) {
@@ -164,8 +167,7 @@ export default class Info extends React.Component {
   }
 
   render() {
-    console.log(this.state)
-
+    // console.log(this.state)
     const {coordinates,userData} = this.state;
 
     let { image, mapComponent } = this.state;

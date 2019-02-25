@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View, Button } from 'react-native';
 import firebase from '../config/firebase.js';
 import {AsyncStorage} from 'react-native';
-import { dbRef,fbAppId } from '../constants/constants'
+import { dbRef,fbAppId,uid } from '../constants/constants'
 
 export default class Login extends React.Component {
   constructor(props){
@@ -13,16 +13,19 @@ export default class Login extends React.Component {
   }
   
     componentDidMount(){
-      fetch(`${dbRef}/usersList.json`)
-    .then(data => {
-        return data.json();
-    })
-    .then(data2 => {
-        // console.log(data2);
-        for(let i in data2){
-          this.state.usersList.push(data2[i].uid);
-        }
-    })
+      //commented till development
+    //   fetch(`${dbRef}/usersList.json`)
+    // .then(data => {
+    //     return data.json();
+    // })
+    // .then(data2 => {
+    //     // console.log(data2);
+    //     for(let i in data2){
+    //       this.state.usersList.push(data2[i].uid);
+    //     }
+    // })
+    //commented till development
+    this.props.navigation.navigate("Home",{uid:uid})
     }
   
     async login() {
@@ -50,7 +53,7 @@ export default class Login extends React.Component {
           })
           const uid = await userData.uid
           const userCheck = await usersList.usersList.includes(uid)
-          await (userCheck ? this.props.navigation.navigate("Home",uid) :
+          await (userCheck ? this.props.navigation.navigate("Home",{uid}) :
           this.props.navigation.navigate("Info",userData)
           )
                 
@@ -64,7 +67,6 @@ export default class Login extends React.Component {
     }
 
   render() {
-    console.log(this.state)
     return (
       <View style={styles.container}>
         <Button
