@@ -34,6 +34,9 @@ const AppNavigator = createStackNavigator({
   },
   Home:{
     screen : TabNavigator
+  },
+  otherProfile :{
+    screen : Profile
   }
 });
 
