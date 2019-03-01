@@ -22,7 +22,7 @@ export default class Handymans extends React.Component {
   constructor(props){
     super(props)
     this.state={
-    
+      disableReqButton : false,
     }
   }
 
@@ -67,6 +67,7 @@ export default class Handymans extends React.Component {
             contracts.push(data2[i])
           }
         }
+        contracts.length > 0 &&
         this.setState({
           contracts : contracts
         })
@@ -88,12 +89,15 @@ sendRequest(value){
     receiver : value.uid,
     status : "pending"
   })
+  this.setState({
+    disableReqButton : true,
+    disableReqButtonUid : value.uid
+  })
 }
 
 render() {
-    const { contracts } = this.state;
-    const { otherUsers } = this.state;
-    const { uid } = this.state;
+    const { contracts, otherUsers, disableReqButton, disableReqButtonUid } = this.state;
+    let  alreadyRendered = false
     return (
       <Container>
         <Header />
@@ -101,6 +105,7 @@ render() {
           <List>
             {
               otherUsers && otherUsers.map((value,index)=>{
+                alreadyRendered = false;
                 return (
                   <ListItem thumbnail>
                     <Left>
@@ -117,23 +122,35 @@ render() {
                           <Text onPress={()=>{this.viewProifle(value)}}>View</Text>
                         </Button>
                       </TouchableOpacity>
-                      <TouchableOpacity>
-                        {contracts && contracts.map((value2)=>{
-                        const reqCheck = value2.receiver === value.uid && value2.status === "pending";
-                        return(
-                        reqCheck ?
-                        <Button disabled>
-                          <Text>Requested</Text>
-                        </Button>
-                        :
-                        <Button transparent>
+                        {!contracts &&
+                        <Button primary>
                           <Text onPress={()=>{this.sendRequest(value)}}>Request</Text>
                         </Button>
-                        
-                        )
+                        }
+                        {contracts && 
+                        contracts.map((value2,index2)=>{
+                          const reqCheck = value2.receiver === value.uid && value2.status === "pending";
+                          const allCheck = reqCheck || (disableReqButtonUid===value.uid && disableReqButton);
+                        if(allCheck && !alreadyRendered){
+                          alreadyRendered = true
+                          return(
+                            <TouchableOpacity>
+                              <Button disabled>
+                                <Text>Requested</Text>
+                              </Button>
+                           </TouchableOpacity>
+                          )
+                        }
+                        if(!allCheck && index2 === contracts.length-1 && !alreadyRendered){
+                          return(
+                            <Button primary>
+                              <Text onPress={()=>{this.sendRequest(value)}}>Request</Text>
+                            </Button>
+                          )
+                        }
                         })
-                        }  
-                      </TouchableOpacity>
+                        }
+                      
                     </Right>
                   </ListItem>
                 )
