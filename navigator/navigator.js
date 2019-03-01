@@ -7,6 +7,7 @@ import Profile from '../screens/profile'
 import Handymans from '../screens/handymans'
 import Messages from '../screens/messages'
 import Contracts from '../screens/contracts'
+import Maps from '../component/maps'
 
 class Navigator extends React.Component {
   render() {
@@ -19,10 +20,18 @@ class Navigator extends React.Component {
 }
 
 const TabNavigator = createBottomTabNavigator ({
-  Profile: Profile,
-  Handymans : Handymans,
-  Messages : Messages,
-  Contracts : Contracts,
+  Profile: {
+    screen: Profile,
+  },
+  Handymans: {
+    screen: Handymans,
+  },
+  Messages: {
+    screen: Messages,
+  },
+  Contracts: {
+    screen: Contracts,
+  },
 });
 
 const AppNavigator = createStackNavigator({
@@ -37,7 +46,10 @@ const AppNavigator = createStackNavigator({
   },
   otherProfile :{
     screen : Profile
-  }
+  },
+  Maps:{
+    screen : Maps
+  },
 });
 
 const Navigation =  createAppContainer(AppNavigator);

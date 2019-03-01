@@ -14,18 +14,18 @@ export default class Login extends React.Component {
   
     componentDidMount(){
       // commented till development
-    //   fetch(`${dbRef}/usersList.json`)
-    // .then(data => {
-    //     return data.json();
-    // })
-    // .then(data2 => {
-    //     // console.log(data2);
-    //     for(let i in data2){
-    //       this.state.usersList.push(data2[i].uid);
-    //     }
-    // })
+      fetch(`${dbRef}/usersList.json`)
+    .then(data => {
+        return data.json();
+    })
+    .then(data2 => {
+        // console.log(data2);
+        for(let i in data2){
+          this.state.usersList.push(data2[i].uid);
+        }
+    })
     // commented till development
-    this.props.navigation.navigate("Home",{uid:uid})
+    // this.props.navigation.navigate("Home",{uid:uid})
     }
   
     async login() {
